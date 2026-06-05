@@ -66,16 +66,16 @@ func toTailnetLockEnabledStatusV1(status *ipnstate.NetworkLockStatus) lockcmdjso
 	}
 	out.NodeKeySigned = &status.NodeKeySigned
 	if sig := status.NodeKeySignature; sig != nil {
-		out.NodeKeySignature = toTKANodeKeySignatureV1(sig)
+		out.NodeKeySignature = nodeKeySignature(sig)
 	}
 	for _, key := range status.TrustedKeys {
-		out.TrustedKeys = append(out.TrustedKeys, ipnTKAKeytoTKAKeyV1(&key))
+		out.TrustedKeys = append(out.TrustedKeys, ipnTKAKey(&key))
 	}
 	for _, vp := range status.VisiblePeers {
-		out.VisiblePeers = append(out.VisiblePeers, toTrustedTKAPeerV1(vp))
+		out.VisiblePeers = append(out.VisiblePeers, trustedPeer(vp))
 	}
 	for _, fp := range status.FilteredPeers {
-		out.FilteredPeers = append(out.FilteredPeers, toTKAPeerV1(fp))
+		out.FilteredPeers = append(out.FilteredPeers, peer(fp))
 	}
 	out.StateID = status.StateID
 
