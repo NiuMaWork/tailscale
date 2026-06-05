@@ -305,7 +305,6 @@ func TestTailnetLockStatusOutput(t *testing.T) {
   "NodeKey": "nodekey:0101010101010101010101010101010101010101010101010101010101010101",
   "Head": "WYIVHDR7JUIXBWAJT5UPSCAILEXB7OMINDFEFEPOPNTUCNXMY2KA",
   "NodeKeySigned": false,
-  "NodeKeySignature": null,
   "TrustedKeys": [
     {
       "Kind": "25519",
