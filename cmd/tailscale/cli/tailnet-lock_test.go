@@ -11,7 +11,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"go4.org/mem"
 	"tailscale.com/cmd/tailscale/cli/jsonoutput"
-	"tailscale.com/feature/tailnetlock/lockcmdjsonv1"
 	"tailscale.com/ipn/ipnstate"
 	"tailscale.com/tailcfg"
 	"tailscale.com/tka"
@@ -355,9 +354,13 @@ func TestTailnetLockStatusOutput(t *testing.T) {
 				t.Parallel()
 
 				var outBuf bytes.Buffer
-				err := lockcmdjsonv1.PrintNetworkLockStatusJSONV1(&outBuf, &tt.Status)
+				json := jsonoutput.SchemaVersion{
+					IsSet:   true,
+					Version: 1,
+				}
+				err := printTailnetLockStatus(&tt.Status, &outBuf, json)
 				if err != nil {
-					t.Fatalf("PrintNetworkLockStatusJSONV1: %v", err)
+					t.Fatalf("printTailnetLockStatus: %v", err)
 				}
 
 				if diff := cmp.Diff(outBuf.String(), tt.Want); diff != "" {
