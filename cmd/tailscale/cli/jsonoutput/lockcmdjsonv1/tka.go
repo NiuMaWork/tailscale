@@ -113,7 +113,7 @@ func toTKANodeKeySignatureV1(sig *tka.NodeKeySignature) *NodeKeySignature {
 // Key is the expanded version of a [tka.Key], which describes
 // the public components of a key known to tailnet-lock.
 type Key struct {
-	Kind string `json:"Kind,omitzero"`
+	Kind string `json:",omitzero"`
 
 	// Votes describes the weight applied to signatures using this key.
 	Votes uint
@@ -123,13 +123,13 @@ type Key struct {
 
 	// Meta describes arbitrary metadata about the key. This could be
 	// used to store the name of the key, for instance.
-	Meta map[string]string `json:"Meta,omitzero"`
+	Meta map[string]string `json:",omitzero"`
 }
 
 // Peer is the JSON representation of an [ipnstate.TKAPeer], which describes
 // a peer and its Tailnet Lock details.
 type Peer struct {
-	// Stable ID, i.e. [tailcfg.StableNodeID]
+	// Stable ID, i.e. [tailscale.com/tailcfg.StableNodeID]
 	ID string
 
 	// DNS name
@@ -142,13 +142,23 @@ type Peer struct {
 	NodeKey string
 }
 
-// tkaPeerV1 is the JSON representation of a trusted [ipnstate.TKAPeer], which
-// has a node key signature.
+// TrustedPeer is the JSON representation of a trusted [ipnstate.TKAPeer], which
+// has a node key signature in addition to [Peer].
 type TrustedPeer struct {
-	Peer
+	// Stable ID, i.e. [tailscale.com/tailcfg.StableNodeID]
+	ID string
+
+	// DNS name
+	DNSName string
+
+	// Tailscale IP(s) assigned to this node
+	TailscaleIPs []string
+
+	// The node's public key
+	NodeKey string
 
 	// The node's key signature
-	NodeKeySignature *NodeKeySignature `json:"NodeKeySignature,omitzero"`
+	NodeKeySignature *NodeKeySignature `json:",omitzero"`
 }
 
 func toTKAPeerV1(peer *ipnstate.TKAPeer) Peer {
@@ -162,6 +172,17 @@ func toTKAPeerV1(peer *ipnstate.TKAPeer) Peer {
 	out.NodeKey = peer.NodeKey.String()
 
 	return out
+}
+
+func toTrustedTKAPeerV1(peer *ipnstate.TKAPeer) TrustedPeer {
+	out := toTKAPeerV1(peer)
+	return TrustedPeer{
+		DNSName:          out.DNSName,
+		ID:               out.ID,
+		TailscaleIPs:     out.TailscaleIPs,
+		NodeKey:          out.NodeKey,
+		NodeKeySignature: toTKANodeKeySignatureV1(&peer.NodeKeySignature),
+	}
 }
 
 // Signature is the expanded form of a [tka.Signature], which

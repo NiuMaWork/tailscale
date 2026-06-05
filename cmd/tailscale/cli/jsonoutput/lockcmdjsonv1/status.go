@@ -73,10 +73,7 @@ func toTailnetLockEnabledStatusV1(status *ipnstate.NetworkLockStatus) StatusResp
 		out.TrustedKeys = append(out.TrustedKeys, ipnTKAKeytoTKAKeyV1(&key))
 	}
 	for _, vp := range status.VisiblePeers {
-		out.VisiblePeers = append(out.VisiblePeers, TrustedPeer{
-			Peer:             toTKAPeerV1(vp),
-			NodeKeySignature: toTKANodeKeySignatureV1(&vp.NodeKeySignature),
-		})
+		out.VisiblePeers = append(out.VisiblePeers, toTrustedTKAPeerV1(vp))
 	}
 	for _, fp := range status.FilteredPeers {
 		out.FilteredPeers = append(out.FilteredPeers, toTKAPeerV1(fp))
